@@ -7,13 +7,19 @@
   "license": "MIT",
   "devDependencies": {
     "@playwright/test": "^1.47.1",
-    "@types/node": "^22.5.5"
+    "@types/eslint__js": "^8.42.3",
+    "@types/node": "^22.5.5",
+    "@typescript-eslint/eslint-plugin": "^8.5.0",
+    "@typescript-eslint/parser": "^8.5.0",
+    "eslint": "^9.10.0",
+    "eslint-plugin-playwright": "^1.6.2",
+    "typescript": "^5.6.2"
   },
   "scripts": {
-		"codegen": "playwright codegen",
-		"test:local": "NODE_ENV=local playwright test",
-		"test": "playwright test"
-	},
+    "codegen": "playwright codegen",
+    "test:local": "NODE_ENV=local playwright test",
+    "test": "playwright test"
+  },
   "dependencies": {
     "dotenv": "^16.4.5"
   }
