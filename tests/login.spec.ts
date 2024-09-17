@@ -23,6 +23,7 @@ test.describe('Autenticazione e utente:', () => {
 			await page.getByLabel('Password').fill(password);
 			await page.getByRole('button', { name: 'Entra con SPID' }).click();
 			await page.getByRole('button', { name: 'Conferma' }).click();
+			await page.waitForURL('**/pagamenti/');
 			await expect(page.getByLabel('app.dashboard.greeting')).toBeVisible();
 			const accessToken = await page.evaluate(() => localStorage.getItem('accessToken'));
 			expect(accessToken).toBeTruthy();
