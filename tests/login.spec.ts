@@ -24,8 +24,8 @@ test.describe('Autenticazione e utente:', () => {
 			await page.getByRole('button', { name: 'Entra con SPID' }).click();
 			await page.getByRole('button', { name: 'Conferma' }).click();
 			await expect(page.getByLabel('app.dashboard.greeting')).toBeVisible();
-			const acessToken = await page.evaluate(() => localStorage.getItem('accessToken'));
-			expect(acessToken).toBeTruthy();
+			const accessToken = await page.evaluate(() => localStorage.getItem('accessToken'));
+			expect(accessToken).toBeTruthy();
 		}
 	});
 
