@@ -1,11 +1,13 @@
 import { test as setup, expect } from '@playwright/test';
+import { skipAuth, userPath } from '../utils';
 import path from 'path';
 
-const authFile = path.join(__dirname, '../.auth/user.json');
+const authFile = path.join(__dirname, `../${userPath}`);
 
-setup("Autenticazione: Come Cittadino voglio autenticarmi nell' Area Riservata Cittadino per poter usufruire dei servizi offerti", async ({ page }) => {
-
-	const username = process.env?.USERNAME;
+setup("[E2E-ARC-1]Come Cittadino voglio autenticarmi nell' Area Riservata Cittadino per poter usufruire dei servizi offerti", async ({ page }) => {
+  setup.skip(skipAuth(), 'Non è necessario autenticarsi più volte, sopratutto durante le fasi di sviluppo e debug');
+  
+  const username = process.env?.USERNAME;
 	const password = process.env?.PASSWORD;
 	expect(username).toBeTruthy();
 	expect(password).toBeTruthy();
@@ -29,6 +31,8 @@ setup("Autenticazione: Come Cittadino voglio autenticarmi nell' Area Riservata C
 		await expect(page.getByLabel('app.dashboard.greeting')).toBeVisible();
 		const accessToken = await page.evaluate(() => localStorage.getItem('accessToken'));
 		expect(accessToken).toBeTruthy();
+
+		// storing user contex
 		await page.context().storageState({ path: authFile });
 	}
 
