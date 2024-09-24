@@ -1,0 +1,20 @@
+{
+  "name": "arc-fe-e2e",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:pagopa/arc-fe-e2e.git",
+  "author": "Michele Moio <michelemoiodev@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.47.1",
+    "@types/node": "^22.5.5"
+  },
+  "scripts": {
+    "codegen": "playwright codegen",
+    "test:local": "NODE_ENV=local playwright test",
+    "test": "playwright test"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  }
+}
