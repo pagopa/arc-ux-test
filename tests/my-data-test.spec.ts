@@ -1,25 +1,21 @@
 import { test, expect } from '@playwright/test';
-import { userPath } from '../utils';
-import fs from 'fs';
+import userInfo from './userInfo.json';
 
 test('my data test', async ({ page }) => {
   
   await page.goto('/pagamenti/');
   await expect(page).toHaveURL('/pagamenti/')
-  const icon= page.getByTestId('AccountCircleRoundedIcon')
-  const nome ="Marco";
-  const cognome="Polo"
 
-  //const responsePromise = page.waitForResponse(resp => resp.url().includes('https://api.dev.cittadini.pagopa.it/arc/v1/auth/user'));
-  //const response = await responsePromise;
-  const a = await page.getByRole("button").getByText("Marco Polo").click();
-  const b = await page.getby.getByText("I tuoi dati").click();
+   await page.getByRole("button").getByText(`${userInfo.name} ${userInfo.cognome}`).click();
+   await page.getByText("I tuoi dati").click();
    page.waitForURL('**/user');
-   const c = await page.getByText("Marco").click();
-   await expect(page.getByText("I tuoi dati")).toBeVisible();
-   await expect(page.getByText("PLOMRC01P30L736Y")).toBeVisible();
+   await expect(page.locator('h1:has-text("Your data")')).toBeVisible();
+   await expect(page.locator(`div:has-text("${userInfo.name}")`).filter({hasNotText:"Assistenza"}).first()).toBeVisible();
+   await expect(page.locator(`div:has-text("${userInfo.cognome}")`).filter({hasNotText:"Assistenza"}).first()).toBeVisible();
 
-  console.log(a)
+   await expect(page.getByText(userInfo.CF)).toBeVisible();
+   await expect(page.getByText(userInfo.email)).toBeVisible();
+
   
 
   
