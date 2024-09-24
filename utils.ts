@@ -10,3 +10,15 @@ const ENVIRONMENT: ENVIRONMENT = process.env.ENVIRONMENT as ENVIRONMENT || ENVIR
 // Auth phase can be skipped when the ENVIRONMENT === 'LOCAL' and a user.json file exists
 // please delete the user.json file when the user's info are outdated (token expired)
 export const skipAuth = (): boolean => ENVIRONMENT === 'LOCAL' && fs.existsSync(userPath);
+
+
+// Helper function to wait for the fulfilled response
+export async function getFulfilledResponse(page, path: string) {
+  const response = await page.waitForResponse(async (response) => {
+    if (!response.url().includes(path)) return false;
+    // const body = await response.json();
+    //return body.status === 'success';
+    return true
+  });
+  return response.json();
+}
