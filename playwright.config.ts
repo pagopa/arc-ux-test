@@ -38,7 +38,6 @@ export default defineConfig({
     { name: 'setup', 
       testMatch: /.*\.setup\.ts/ 
     },
-
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'],
@@ -46,7 +45,6 @@ export default defineConfig({
       },
       dependencies: ['setup'],
     },
-
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'],
@@ -54,7 +52,6 @@ export default defineConfig({
       },
       dependencies: ['setup'],
     },
-
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'], 
