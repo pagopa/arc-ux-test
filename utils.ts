@@ -22,3 +22,11 @@ export async function getFulfilledResponse(page, path: string) {
   });
   return response.json();
 }
+
+export const toEuro = (amount: number, decimalDigits: number = 2, fractionDigits: number = 2): string =>
+  new Intl.NumberFormat('it-IT', {
+    style: 'currency',
+    currency: 'EUR',
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits
+  }).format(amount / Math.pow(10, decimalDigits));

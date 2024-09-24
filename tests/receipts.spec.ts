@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { getFulfilledResponse } from '../utils';
+import { getFulfilledResponse, toEuro } from '../utils';
 
 test("[E2E-ARC-9] Come Cittadino voglio accedere alla pagina di dettaglio di una ricevuta in modo da poter consultare tutte le informazioni disponibili", async ({ page }) => {
 	await page.goto('/pagamenti/');
@@ -8,15 +8,15 @@ test("[E2E-ARC-9] Come Cittadino voglio accedere alla pagina di dettaglio di una
 
   //saving info of the first item
   const listItem = listResponseBody.transactions[0];
-  //const { amount, payeeName, transactionDate, transactionId } = transaction;
-  console.log(listItem);
+  // const { amount, payeeName, transactionDate, transactionId } = transaction;
+  // console.log(listItem);
 
   // click on first row item
   page.locator("table[aria-label='Storico table'] > tbody > tr").nth(0).click();
   await expect(page).toHaveURL(`/pagamenti/transactions/${listItem.transactionId}`);
 
   const { infoTransaction: transaction, carts } = await getFulfilledResponse(page, `arc/v1/transactions/${listItem.transactionId}`);
-  console.log(transaction, carts[0]);
+  //console.log(transaction, carts[0]);
 
   // data checks
   expect(listItem.transactionId === transaction.transactionId).toBeTruthy();
@@ -39,6 +39,13 @@ test("[E2E-ARC-9] Come Cittadino voglio accedere alla pagina di dettaglio di una
 
 
   // TRANSACTION
+  // fee 
+  await expect(page.getByText(toEuro(transaction.fee))).toBeVisible();
+  // partial 
+  await expect(page.getByText(toEuro(transaction.amount))).toBeVisible();
+  // total 
+  await expect(page.getByText(toEuro(transaction.fee + transaction.amount))).toBeVisible();
+
   // psp name
   await expect(page.getByText(transaction.pspName, { exact: true })).toBeVisible();
   // rrn
