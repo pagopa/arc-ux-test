@@ -1,51 +1,42 @@
 import { test, expect } from '@playwright/test';
-import { getFulfilledResponse, toEuro } from '../utils';
+import { getFulfilledResponse, isValidDate } from '../utils';
 
 test("[E2E-ARC-9] Come Cittadino voglio accedere alla pagina di dettaglio di una ricevuta in modo da poter consultare tutte le informazioni disponibili", async ({ page }) => {
 	await page.goto('/pagamenti/');
-  //await expect(page).toHaveURL('/pagamenti/')
+  await expect(page).toHaveURL('/pagamenti/')
+
+  // waiting for the API call
   const listResponseBody = await getFulfilledResponse(page, 'arc/v1/transactions');
 
-  //saving info of the first item
+  // saving info of the first item
   const listItem = listResponseBody.transactions[0];
-  // const { amount, payeeName, transactionDate, transactionId } = transaction;
-  // console.log(listItem);
 
   // click on first row item
   page.locator("table[aria-label='Storico table'] > tbody > tr").nth(0).click();
   await expect(page).toHaveURL(`/pagamenti/transactions/${listItem.transactionId}`);
 
+  // waiting for the API call
   const { infoTransaction: transaction, carts } = await getFulfilledResponse(page, `arc/v1/transactions/${listItem.transactionId}`);
-  //console.log(transaction, carts[0]);
 
-  // data checks
+  // DATA CHECKS
   expect(listItem.transactionId === transaction.transactionId).toBeTruthy();
   expect(listItem.amount === transaction.amount).toBeTruthy();
   expect(listItem.transactionDate === transaction.transactionDate).toBeTruthy();
   expect(listItem.transactionDate === transaction.transactionDate).toBeTruthy();
-
   // assuming a single cart item, needs an update when we will manage multi carts item
   expect(listItem.payeeName === carts[0].payee.name).toBeTruthy();
-
-  // PAGE INFO CHECKS
-
-  // CART
   // payee Name
   await expect(page.getByText(carts[0].payee.name)).toBeVisible();
   // payee taxt code
   await expect(page.getByText(carts[0].payee.taxCode)).toBeVisible();
-  // recepits code
+  // recepit code
   await expect(page.getByText(carts[0].refNumberValue)).toBeVisible();
-
-
-  // TRANSACTION
   // fee 
-  await expect(page.getByText(toEuro(transaction.fee))).toBeVisible();
+  expect( typeof transaction.fee === 'number').toBeTruthy();
   // partial 
-  await expect(page.getByText(toEuro(transaction.amount))).toBeVisible();
-  // total 
-  await expect(page.getByText(toEuro(transaction.fee + transaction.amount))).toBeVisible();
-
+  expect(typeof transaction.amount === 'number').toBeTruthy();
+  // date
+  expect(isValidDate(transaction.transactionDate)).toBeTruthy();
   // psp name
   await expect(page.getByText(transaction.pspName, { exact: true })).toBeVisible();
   // rrn

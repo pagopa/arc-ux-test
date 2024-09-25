@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { Page } from '@playwright/test';
 
 /** 'LOCAL' | 'DEV' | 'UAT' */
 export type ENVIRONMENT = 'LOCAL' | 'DEV' | 'UAT';
@@ -13,20 +14,18 @@ export const skipAuth = (): boolean => ENVIRONMENT === 'LOCAL' && fs.existsSync(
 
 
 // Helper function to wait for the fulfilled response
-export async function getFulfilledResponse(page, path: string) {
+export async function getFulfilledResponse(page: Page, path: string) {
   const response = await page.waitForResponse(async (response) => {
     if (!response.url().includes(path)) return false;
-    // const body = await response.json();
-    //return body.status === 'success';
     return true
   });
   return response.json();
 }
 
-export const toEuro = (amount: number, decimalDigits: number = 2, fractionDigits: number = 2): string =>
-  new Intl.NumberFormat('it-IT', {
-    style: 'currency',
-    currency: 'EUR',
-    minimumFractionDigits: fractionDigits,
-    maximumFractionDigits: fractionDigits
-  }).format(amount / Math.pow(10, decimalDigits));
+export function isValidDate(d: string) {
+  const date = new Date(d);
+  // If the date object is invalid it
+  // will return 'NaN' on getTime()
+  // and NaN is never equal to itself
+  return date.getTime() === date.getTime();
+}
