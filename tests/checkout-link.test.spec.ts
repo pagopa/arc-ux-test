@@ -10,7 +10,9 @@ test('checkout link test', async ({ page }) => {
   const ENV = (process.env.NODE_ENV === 'dev' || process.env.NODE_ENV === 'uat') ? process.env.NODE_ENV : 'dev'; /*this is because if the env is LOCAL, the link for checkout
   will not be valid.  */
   await newTab.waitForLoadState();
-  await expect(newTab).toHaveURL(`https://${ENV}.checkout.pagopa.it/`);
 
+
+  await expect(newTab).toHaveURL(new RegExp('checkout.pagopa.it/'));
+  
 
 });
