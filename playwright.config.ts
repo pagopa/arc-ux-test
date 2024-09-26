@@ -2,9 +2,9 @@ import { defineConfig, devices } from '@playwright/test';
 import dotenv from 'dotenv';
 import path from 'path';
 
-const ENV = process.env.NODE_ENV || 'dev';
-console.log(`Running tests on NODE_ENV: ${ENV}`)
-dotenv.config({ path: path.resolve(__dirname, `.env.${ENV}`) })
+dotenv.config({ path: path.resolve(__dirname, '.env')});
+
+console.log(`Running tests on: ${process.env.BASE_URL}; environment: ${process.env.ENVIRONMENT}`);
 
 /**
  * See https://playwright.dev/docs/test-configuration.

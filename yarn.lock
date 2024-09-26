@@ -26,6 +26,11 @@ fsevents@2.3.2:
   resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.2.tgz#8a526f78b8fdf4623b709e0b975c52c24c02fd1a"
   integrity sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==
 
+jwt-decode@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/jwt-decode/-/jwt-decode-4.0.0.tgz#2270352425fd413785b2faf11f6e755c5151bd4b"
+  integrity sha512-+KJGIyHgkGuIq3IEBNftfhW/LfWhXUIY6OmyVWjliu5KH1y0fw7VQ8YndE2O4qZdMSd9SqbnC8GOcZEy0Om7sA==
+
 playwright-core@1.47.1:
   version "1.47.1"
   resolved "https://registry.yarnpkg.com/playwright-core/-/playwright-core-1.47.1.tgz#bb45bdfb0d48412c535501aa3805867282857df8"
