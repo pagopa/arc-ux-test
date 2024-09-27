@@ -7,8 +7,6 @@ test('checkout link test', async ({ page }) => {
   const newTabPromise = page.waitForEvent("popup");
 
   const newTab = await newTabPromise;
-  const ENV = (process.env.NODE_ENV === 'dev' || process.env.NODE_ENV === 'uat') ? process.env.NODE_ENV : 'dev'; /*this is because if the env is LOCAL, the link for checkout
-  will not be valid.  */
   await newTab.waitForLoadState();
 
 
