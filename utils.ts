@@ -1,5 +1,6 @@
 import fs from 'fs';
 import { Page } from '@playwright/test';
+import { jwtDecode } from "jwt-decode";
 
 /** 'LOCAL' | 'DEV' | 'UAT' */
 export type ENVIRONMENT = 'LOCAL' | 'DEV' | 'UAT';
@@ -7,11 +8,6 @@ export const ENVIRONMENTDEFAULT = 'LOCAL'
 export const userPath = 'auth/user.json';
 
 const ENVIRONMENT: ENVIRONMENT = process.env.ENVIRONMENT as ENVIRONMENT || ENVIRONMENTDEFAULT;
-
-// Auth phase can be skipped when the ENVIRONMENT === 'LOCAL' and a user.json file exists
-// please delete the user.json file when the user's info are outdated (token expired)
-export const skipAuth = (): boolean => ENVIRONMENT === 'LOCAL' && fs.existsSync(userPath);
-
 
 // Helper function to wait for the fulfilled response
 export async function getFulfilledResponse(page: Page, path: string) {
@@ -29,3 +25,29 @@ export function isValidDate(d: string) {
   // and NaN is never equal to itself
   return date.getTime() === date.getTime();
 }
+
+// Auth phase can be skipped when the ENVIRONMENT === 'LOCAL' and a user.json file exists and the token is still valid
+export const skipAuth = async(): Promise<boolean> => new Promise((resolve, _reject) => {
+  if (fs.existsSync(userPath) && ENVIRONMENT === 'LOCAL') {
+    fs.readFile(userPath, "utf8", (err, jsonString) => {
+      if (err) {
+        console.log("File read failed:", err);
+        return resolve(false);
+      }
+      try {
+        const origins = JSON.parse(jsonString).origins;
+        const arc = origins.find(({ origin } : { origin: string }) => origin.includes(process.env.BASE_URL || 'cittadini.pagopa.it' ));
+        const token = arc.localStorage.find(({ name }: { name: string }) => name === 'accessToken').value;
+        const decoded = jwtDecode(token);
+        const now = Math.floor(Date.now() / 1000);
+        const expire = decoded.exp || 0;
+        resolve(now < expire);
+      } catch (err) {
+        console.log("Error parsing JSON string:", err);
+        resolve(false);
+      }
+    });
+  } else {
+    resolve(false);
+  }
+});

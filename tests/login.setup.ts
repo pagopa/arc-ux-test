@@ -5,7 +5,7 @@ import path from 'path';
 const authFile = path.join(__dirname, `../${userPath}`);
 
 setup("[E2E-ARC-1]Come Cittadino voglio autenticarmi nell' Area Riservata Cittadino per poter usufruire dei servizi offerti", async ({ page }) => {
-  setup.skip(skipAuth(), 'Non è necessario autenticarsi più volte, sopratutto durante le fasi di sviluppo e debug');
+  setup.skip(await skipAuth(), 'Non è necessario autenticarsi più volte, sopratutto durante le fasi di sviluppo e debug');
   
   const username = process.env?.USERNAME;
 	const password = process.env?.PASSWORD;
