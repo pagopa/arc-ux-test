@@ -49,6 +49,12 @@ export default defineConfig({
       name: 'firefox',
       use: { ...devices['Desktop Firefox'],
         storageState: './auth/user.json',
+        launchOptions: {
+          firefoxUserPrefs: {
+            // allow pdf on new tab
+            'pdfjs.disabled': false,
+          },
+        }
       },
       dependencies: ['setup'],
     },
