@@ -41,5 +41,19 @@ test(`[E2E-ARC-5] Come Cittadino voglio accedere alla lista degli avvisi da paga
   await listFirstItem.getByRole('button').click();
   await expect(page).toHaveURL(`/pagamenti/payment-notices/${responseFirstItem.iupd}`);
 
+});
+
+test(`[E2E-ARC-6] Come Cittadino voglio accedere al dettaglio di un avviso di pagamento`, async () => {
+  // get data from sessionStorage
+  const paymentNotice = await page.evaluate((val) => sessionStorage.getItem('paymentNotice'));
+  const paymentNoticeJson = JSON.parse(paymentNotice || "");
+  // checks value on the page
+  const amountElCount = await page.locator("dd").getByText(paymentNoticeJson.paymentOptions.installments.amount).count();
+  await expect(amountElCount).toBe(2);
+  await expect(page.locator("dd").getByText(paymentNoticeJson.paymentOptions.installments.paFullName)).toBeVisible();
+  await expect(page.locator("dd").getByText(paymentNoticeJson.paymentOptions.installments.description)).toBeVisible();
+  await expect(page.locator("dd").getByText(paymentNoticeJson.paymentOptions.installments.iuv)).toBeVisible();
+  await expect(page.locator("dd").getByText(paymentNoticeJson.paymentOptions.installments.paTaxCode)).toBeVisible();
+  await expect(page.getByRole("button").getByText("Paga ora")).toBeEnabled();;
 
 });
