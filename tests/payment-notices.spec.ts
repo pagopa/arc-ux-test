@@ -55,5 +55,30 @@ test(`[E2E-ARC-6] Come Cittadino voglio accedere al dettaglio di un avviso di pa
   await expect(page.locator("dd").getByText(paymentNoticeJson.paymentOptions.installments.iuv)).toBeVisible();
   await expect(page.locator("dd").getByText(paymentNoticeJson.paymentOptions.installments.paTaxCode)).toBeVisible();
   await expect(page.getByRole("button").getByText("Paga ora")).toBeEnabled();;
+});
 
+test(`[E2E-ARC-5B] Come Cittadino voglio accedere alla lista degli avvisi da pagare, ma si verifca un errore`, async () => {
+  // causing a error when requesting payment notices items
+  await page.route('**/arc/v1/payment-notices', route => route.abort());
+
+  await page.goBack();
+  await expect(page).toHaveURL('/pagamenti/payment-notices/');
+  
+  // test if session storage var is filled
+  const OPTIN = await page.evaluate(() => sessionStorage.getItem('OPTIN'));
+  expect(OPTIN).toBeTruthy();
+
+  // waiting for retries ending
+  await page.waitForTimeout(1000*10);
+  expect(page.getByText('Non riusciamo a recuperare i dati a causa di un problema.')).toBeVisible();
+
+  // clearing abort
+  await page.unroute('**/arc/v1/payment-notices');
+  await page.getByRole("button").getByText("Riprova").click();
+  await page.waitForTimeout(1000*10);
+
+  // wait for the list of payment notices assuming that by now the API works
+  await expect(page.getByRole('listbox')).toBeVisible();
+  const optionsListItemsCount = await page.getByRole('option').count();
+  expect(optionsListItemsCount).toBeGreaterThan(0);
 });
