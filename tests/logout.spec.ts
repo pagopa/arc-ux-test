@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test(`[E2E-ARC-3] Come Cittadino voglio 'sloggarmi' dall'applicativo`, async ({ page }) => {
   // mock BE response to avoid accessToken cancel
-  await page.route('*/**/arc/v1/logout', async route => {
+  await page.route('*/**/arc/v1/logout', async (route) => {
     const json = {};
     await route.fulfill({ json });
   });
@@ -15,6 +15,5 @@ test(`[E2E-ARC-3] Come Cittadino voglio 'sloggarmi' dall'applicativo`, async ({ 
   await page.waitForURL('**/login');
 
   const accessToken = await page.evaluate(() => localStorage.getItem('accessToken'));
-	expect(accessToken).toBeNull();
-
+  expect(accessToken).toBeNull();
 });
