@@ -89,3 +89,14 @@ test(`[E2E-ARC-5C] Come Cittadino voglio accedere alla lista degli avvisi da pag
   await expect(page).toHaveURL('/pagamenti/transactions');
   await expect(page.getByText(errorMessage)).toBeVisible();
 });
+
+test('[E2E-ARC-9B] Come Cittadino voglio accedere alla pagina di dettaglio di una ricevuta in modo da poter consultare tutte le informazioni disponibili, ma si verifica un errore.', async () => {
+  await page.route('*/**/arc/v1/transactions/*', (route) => {
+    route.abort();
+  });
+  const errorMessage = 'Ops! Something went wrong, please try again';
+  await page.reload();
+  await expect(page).toHaveURL(`/pagamenti/transactions/${transactionId}`);
+  await expect(page.getByText(errorMessage)).toBeVisible({ timeout: 20000 });
+
+});
