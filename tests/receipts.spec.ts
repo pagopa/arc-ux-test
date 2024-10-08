@@ -78,13 +78,12 @@ test('[E2E-ARC-10] Come Cittadino voglio poter visualizzare il PDF di un avviso 
   );
 });
 
-test("[E2E-ARC-9B] Come Cittadino voglio accedere alla pagina di dettaglio di una ricevuta in modo da poter consultare tutte le informazioni disponibili, ma si verifica un errore.", async () => {
-  await page.route('*/**/arc/v1/transactions/*',  route => {
+test('[E2E-ARC-9B] Come Cittadino voglio accedere alla pagina di dettaglio di una ricevuta in modo da poter consultare tutte le informazioni disponibili, ma si verifica un errore.', async () => {
+  await page.route('*/**/arc/v1/transactions/*', (route) => {
     route.abort();
   });
-  const errorMessage = "Ops! Something went wrong, please try again";
+  const errorMessage = 'Ops! Something went wrong, please try again';
   await page.reload();
   await expect(page).toHaveURL(`/pagamenti/transactions/${transactionId}`);
   await expect(page.getByText(errorMessage)).toBeVisible({ timeout: 20000 });
-
 });
