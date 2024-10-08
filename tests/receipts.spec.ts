@@ -79,9 +79,9 @@ test('[E2E-ARC-10] Come Cittadino voglio poter visualizzare il PDF di un avviso 
 });
 
 test(`[E2E-ARC-5C] Come Cittadino voglio accedere alla lista degli avvisi da pagare in modo da poter avere una visione sintetica e d’insieme, non ottengo alcun errore, ma non ho avvisi associati.`, async () => {
-  const errorMessage = "Qui vedrai le tue ricevute pagoPA";
-  await page.route('**/arc/v1/transactions', async route => {
-    const json = { transactions: []};
+  const errorMessage = 'Qui vedrai le tue ricevute pagoPA';
+  await page.route('**/arc/v1/transactions', async (route) => {
+    const json = { transactions: [] };
     await route.fulfill({ json });
   });
 
