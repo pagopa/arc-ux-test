@@ -5,15 +5,19 @@ test.describe.configure({ mode: 'serial' });
 
 let page: Page;
 
-test.beforeAll(async ({ browser }) => { page = await browser.newPage(); });
-test.afterAll(async () => { await page.close(); });
+test.beforeAll(async ({ browser }) => {
+  page = await browser.newPage();
+});
+test.afterAll(async () => {
+  await page.close();
+});
 
 let transactionId;
 
-test("[E2E-ARC-9] Come Cittadino voglio accedere alla pagina di dettaglio di una ricevuta in modo da poter consultare tutte le informazioni disponibili", async () => {
+test('[E2E-ARC-9] Come Cittadino voglio accedere alla pagina di dettaglio di una ricevuta in modo da poter consultare tutte le informazioni disponibili', async () => {
   await page.goto('/pagamenti/');
   await expect(page).toHaveURL('/pagamenti/');
-  
+
   // waiting for the API call
   const listResponseBody = await getFulfilledResponse(page, 'arc/v1/transactions');
 
@@ -27,7 +31,10 @@ test("[E2E-ARC-9] Come Cittadino voglio accedere alla pagina di dettaglio di una
   await expect(page).toHaveURL(`/pagamenti/transactions/${transactionId}`);
 
   // waiting for the API call
-  const { infoTransaction: transaction, carts } = await getFulfilledResponse(page, `arc/v1/transactions/${transactionId}`);
+  const { infoTransaction: transaction, carts } = await getFulfilledResponse(
+    page,
+    `arc/v1/transactions/${transactionId}`
+  );
 
   // DATA CHECKS
   expect(listItem.transactionId === transaction.transactionId).toBeTruthy();
@@ -42,9 +49,9 @@ test("[E2E-ARC-9] Come Cittadino voglio accedere alla pagina di dettaglio di una
   await expect(page.getByText(carts[0].payee.taxCode)).toBeVisible();
   // recepit code
   await expect(page.getByText(carts[0].refNumberValue)).toBeVisible();
-  // fee 
-  expect( typeof transaction.fee === 'number').toBeTruthy();
-  // partial 
+  // fee
+  expect(typeof transaction.fee === 'number').toBeTruthy();
+  // partial
   expect(typeof transaction.amount === 'number').toBeTruthy();
   // date
   expect(isValidDate(transaction.transactionDate)).toBeTruthy();
@@ -53,16 +60,20 @@ test("[E2E-ARC-9] Come Cittadino voglio accedere alla pagina di dettaglio di una
   // rrn
   await expect(page.getByText(transaction.rrn)).toBeVisible();
   // transactionId
-  const transactionIdSubstring = transaction.transactionId.substring(0,7)
+  const transactionIdSubstring = transaction.transactionId.substring(0, 7);
   await expect(page.getByText(new RegExp(`${transactionIdSubstring}`))).toBeVisible();
 });
-  
-test("[E2E-ARC-10] Come Cittadino voglio poter visualizzare il PDF di un avviso per poterlo stampare (eventualmente)", async ({ browserName }) => {
+
+test('[E2E-ARC-10] Come Cittadino voglio poter visualizzare il PDF di un avviso per poterlo stampare (eventualmente)', async ({
+  browserName
+}) => {
   // Unfortunately with chromium this assertion doesn't work. I think it's a kind of bug
   // https://github.com/microsoft/playwright/issues/6342
   test.skip(browserName === 'chromium');
-  const pagePromise = page.waitForEvent('popup');  
+  const pagePromise = page.waitForEvent('popup');
   await page.getByTestId('receipt-download-btn').click();
   const newPage = await pagePromise;
-  await expect(newPage).toHaveURL(/blob:http(s)?:\/\/(dev.|uat.)?cittadini.pagopa.it\/([a-z]|[0-9]|-)*/);
+  await expect(newPage).toHaveURL(
+    /blob:http(s)?:\/\/(dev.|uat.)?cittadini.pagopa.it\/([a-z]|[0-9]|-)*/
+  );
 });
