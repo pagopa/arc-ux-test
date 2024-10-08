@@ -23,7 +23,6 @@
   },
   "scripts": {
     "codegen": "playwright codegen",
-    "test:local": "NODE_ENV=local playwright test",
     "test": "playwright test",
 		"lint": "eslint",
 		"lint:fix": "eslint --fix"
