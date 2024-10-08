@@ -8,39 +8,39 @@ let page: Page;
 test.beforeAll(async ({ browser }) => {
   page = await browser.newPage();
 });
+
 test.afterAll(async () => {
   await page.close();
 });
 
-let transactionId;
+let eventId;
 
 test('[E2E-ARC-9] Come Cittadino voglio accedere alla pagina di dettaglio di una ricevuta in modo da poter consultare tutte le informazioni disponibili', async () => {
   await page.goto('/pagamenti/');
   await expect(page).toHaveURL('/pagamenti/');
 
   // waiting for the API call
-  const listResponseBody = await getFulfilledResponse(page, 'arc/v1/transactions');
+  const listResponseBody = await getFulfilledResponse(page, 'arc/v1/notices');
 
   // saving info of the first item
-  const listItem = listResponseBody.transactions[0];
+  const listItem = listResponseBody.notices[0];
 
-  transactionId = listItem.transactionId;
+  eventId = listItem.eventId;
 
   // click on first row item
   page.locator("table[aria-label='Storico table'] > tbody > tr").nth(0).click();
-  await expect(page).toHaveURL(`/pagamenti/transactions/${transactionId}`);
+  await expect(page).toHaveURL(`/pagamenti/transactions/${eventId}`);
 
   // waiting for the API call
   const { infoTransaction: transaction, carts } = await getFulfilledResponse(
     page,
-    `arc/v1/transactions/${transactionId}`
+    `arc/v1/transactions/${eventId}`
   );
 
   // DATA CHECKS
-  expect(listItem.transactionId === transaction.transactionId).toBeTruthy();
+  expect(listItem.eventId === transaction.transactionId).toBeTruthy();
   expect(listItem.amount === transaction.amount).toBeTruthy();
-  expect(listItem.transactionDate === transaction.transactionDate).toBeTruthy();
-  expect(listItem.transactionDate === transaction.transactionDate).toBeTruthy();
+  expect(listItem.noticeDate === transaction.transactionDate).toBeTruthy();
   // assuming a single cart item, needs an update when we will manage multi carts item
   expect(listItem.payeeName === carts[0].payee.name).toBeTruthy();
   // payee Name
@@ -78,24 +78,24 @@ test('[E2E-ARC-10] Come Cittadino voglio poter visualizzare il PDF di un avviso 
   );
 });
 
-test(`[E2E-ARC-5C] Come Cittadino voglio accedere alla lista degli avvisi da pagare in modo da poter avere una visione sintetica e d’insieme, non ottengo alcun errore, ma non ho avvisi associati.`, async () => {
-  const errorMessage = 'Qui vedrai le tue ricevute pagoPA';
-  await page.route('**/arc/v1/transactions', async (route) => {
-    const json = { transactions: [] };
-    await route.fulfill({ json });
-  });
-
-  await page.goto('/pagamenti/transactions');
-  await expect(page).toHaveURL('/pagamenti/transactions');
-  await expect(page.getByText(errorMessage)).toBeVisible();
-});
-
 test('[E2E-ARC-9B] Come Cittadino voglio accedere alla pagina di dettaglio di una ricevuta in modo da poter consultare tutte le informazioni disponibili, ma si verifica un errore.', async () => {
   await page.route('*/**/arc/v1/transactions/*', (route) => {
     route.abort();
   });
   const errorMessage = 'Ops! Something went wrong, please try again';
   await page.reload();
-  await expect(page).toHaveURL(`/pagamenti/transactions/${transactionId}`);
+  await expect(page).toHaveURL(`/pagamenti/transactions/${eventId}`);
   await expect(page.getByText(errorMessage)).toBeVisible({ timeout: 20000 });
+});
+
+test(`[E2E-ARC-5C] Come Cittadino voglio accedere alla lista degli avvisi da pagare in modo da poter avere una visione sintetica e d’insieme, non ottengo alcun errore, ma non ho avvisi associati.`, async () => {
+  const errorMessage = 'Qui vedrai le tue ricevute pagoPA';
+  await page.route('**/arc/v1/notices', async (route) => {
+    const json = { notices: [] };
+    await route.fulfill({ json });
+  });
+
+  await page.goto('/pagamenti/transactions');
+  await expect(page).toHaveURL('/pagamenti/transactions');
+  await expect(page.getByText(errorMessage)).toBeVisible();
 });
