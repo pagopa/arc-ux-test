@@ -98,17 +98,17 @@ test(`[E2E-ARC-5B] Come Cittadino voglio accedere alla lista degli avvisi da pag
 });
 
 test(`E2E-ARC-5C] Come Cittadino voglio accedere alla lista degli avvisi da pagare in modo da poter avere una visione sintetica e d’insieme, non ottengo alcun errore, ma non ho avvisi associati.`, async () => {
-  const emptyMessage = "Non abbiamo trovato avvisi da pagare";
+  const emptyMessage = 'Non abbiamo trovato avvisi da pagare';
   // reset mock
   await page.unroute('**/arc/v1/payment-notices');
   // override response setting an empty array
-  await page.route('**/arc/v1/payment-notices', async route => {
-    const json = { paymentNotices: []};
+  await page.route('**/arc/v1/payment-notices', async (route) => {
+    const json = { paymentNotices: [] };
     await route.fulfill({ json });
   });
   // reload
   page.reload();
   // test
   await expect(page).toHaveURL('/pagamenti/payment-notices/');
-  await expect(page.getByText(emptyMessage)).toBeVisible({timeout: 10000});
+  await expect(page.getByText(emptyMessage)).toBeVisible({ timeout: 10000 });
 });
