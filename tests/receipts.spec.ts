@@ -98,5 +98,4 @@ test('[E2E-ARC-9B] Come Cittadino voglio accedere alla pagina di dettaglio di un
   await page.reload();
   await expect(page).toHaveURL(`/pagamenti/transactions/${transactionId}`);
   await expect(page.getByText(errorMessage)).toBeVisible({ timeout: 20000 });
-
 });
