@@ -1,4 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
+import userInfo from './userInfo.json';
 
 // Annotate entire file as serial.
 test.describe.configure({ mode: 'serial' });
@@ -71,11 +72,29 @@ test(`[E2E-ARC-6] Come Cittadino voglio accedere al dettaglio di un avviso di pa
   await expect(page.getByRole('button').getByText('Paga ora')).toBeEnabled();
 });
 
+test(`[E2E-ARC-7] Come Cittadino voglio poter avviare il pagamento di un avviso`, async () => {
+  // get data from sessionStorage
+  const paymentNotice = await page.evaluate(() => sessionStorage.getItem('paymentNotice'));
+  const paymentNoticeJson = JSON.parse(paymentNotice || '');
+  const amount = paymentNoticeJson.paymentOptions.installments.amount;
+  const userEmail = userInfo.email;
+  // click to pay
+  await page.getByRole('button').getByText('Paga ora').click();
+  // wait for checkout
+  await expect(page).toHaveURL(new RegExp('checkout.pagopa.it/'));
+  // test on checkout side
+  await expect(page.locator('#email')).toBeVisible({ timeout: 10000 });
+  // test if the user email field is filled with the user email
+  await expect(page.locator('#email')).toHaveValue(userEmail);
+  // test if the car button as the same amount of the payment notice
+  await expect(page.getByRole('button').getByText(amount)).toBeVisible();
+});
+
 test(`[E2E-ARC-5B] Come Cittadino voglio accedere alla lista degli avvisi da pagare, ma si verifca un errore`, async () => {
   // causing a error when requesting payment notices items
   await page.route('**/arc/v1/payment-notices', (route) => route.abort());
 
-  await page.goBack();
+  await page.goto('/pagamenti/payment-notices/');
   await expect(page).toHaveURL('/pagamenti/payment-notices/');
 
   // test if session storage var is filled
