@@ -23,7 +23,7 @@
   },
   "scripts": {
     "codegen": "playwright codegen",
-    "test": "playwright test --ui",
+    "test": "playwright test",
 		"lint": "eslint",
 		"lint:fix": "eslint --fix"
   },
