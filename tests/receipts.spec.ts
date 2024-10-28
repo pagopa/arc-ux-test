@@ -20,7 +20,7 @@ test('[E2E-ARC-9] Come Cittadino voglio accedere alla pagina di dettaglio di una
   await expect(page).toHaveURL('/pagamenti/');
 
   // waiting for the API call
-  const listResponseBody = await getFulfilledResponse(page, 'arc/v1/notices');
+  const listResponseBody = await getFulfilledResponse(page, 'arc/v1/notices?');
 
   // saving info of the first item
   const listItem = listResponseBody.notices[0];
@@ -79,7 +79,7 @@ test('[E2E-ARC-10] Come Cittadino voglio poter visualizzare il PDF di un avviso 
 });
 
 test('[E2E-ARC-10B] Come Cittadino voglio poter visualizzare il PDF di un avviso per poterlo stampare (eventualmente), ma si verifica un errore.', async () => {
-  await page.route('*/**/arc/v1/transactions/**/receipt*', async (route) => {
+  await page.route('*/**/arc/v1/notices/**/receipt*', async (route) => {
     await route.fulfill({
       status: 500,
       contentType: 'application/json'
