@@ -20,7 +20,6 @@ setup(
     if (username && password) {
       await page.goto('/');
       await page.goto('/pagamenti/login');
-      await page.getByRole('button', { name: 'Accetta tutti' }).click();
       await page.getByLabel('Accedi').click();
       await page.getByRole('button', { name: 'Entra con SPID' }).click();
       await page.getByLabel('demo', { exact: true }).click();
