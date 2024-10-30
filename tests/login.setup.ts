@@ -10,7 +10,9 @@ const executeLoginSteps = async (page: Page) => {
   expect(username).toBeTruthy();
   expect(password).toBeTruthy();
 
-  if (!(username && password)) { throw new Error('Setup has failed, missing username and/or password!');}
+  if (!(username && password)) {
+    throw new Error('Setup has failed, missing username and/or password!');
+  }
   await page.goto('/');
   await page.goto('/pagamenti/login');
   await page.getByLabel('Accedi').click();
@@ -24,7 +26,7 @@ const executeLoginSteps = async (page: Page) => {
   await page.getByLabel('Password').fill(password);
   await page.getByRole('button', { name: 'Entra con SPID' }).click();
   await page.getByRole('button', { name: 'Conferma' }).click();
-}
+};
 
 const saveState = async (page: Page) => {
   // this means we are logged in on the main dashboard page
@@ -33,7 +35,7 @@ const saveState = async (page: Page) => {
   expect(accessToken).toBeTruthy();
   // storing user contex
   await page.context().storageState({ path: authFile });
-}
+};
 
 setup(
   "[E2E-ARC-1] Come Cittadino voglio autenticarmi nell' Area Riservata Cittadino per poter usufruire dei servizi offerti",
@@ -53,10 +55,11 @@ setup(
           const { search } = new URL(request.url());
           await route.abort();
           await page.goto(`/pagamenti/auth-callback${search}`);
-          return
-        } 
+          return;
+        }
         route.continue();
-        }, { times: 1 }
+      },
+      { times: 1 }
     );
 
     await executeLoginSteps(page);
