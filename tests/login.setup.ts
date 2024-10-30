@@ -13,7 +13,6 @@ const executeLoginSteps = async (page: Page) => {
   if (!(username && password)) { throw new Error('Setup has failed, missing username and/or password!');}
   await page.goto('/');
   await page.goto('/pagamenti/login');
-  await page.getByRole('button', { name: 'Accetta tutti' }).click();
   await page.getByLabel('Accedi').click();
   await page.getByRole('button', { name: 'Entra con SPID' }).click();
   await page.getByTestId('idp-button-https://demo.spid.gov.it').click();
