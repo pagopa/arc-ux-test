@@ -32,15 +32,15 @@ test('[E2E-ARC-9] Come Cittadino voglio accedere alla pagina di dettaglio di una
   await expect(page).toHaveURL(`/pagamenti/transactions/${eventId}`);
 
   // waiting for the API call
-  const { infoTransaction: transaction, carts } = await getFulfilledResponse(
+  const { infoNotice: notice, carts } = await getFulfilledResponse(
     page,
     `arc/v1/notices/${eventId}`
   );
 
   // DATA CHECKS
-  expect(listItem.eventId === transaction.eventId).toBeTruthy();
-  expect(listItem.amount === transaction.amount).toBeTruthy();
-  expect(listItem.noticeDate === transaction.transactionDate).toBeTruthy();
+  expect(listItem.eventId === notice.eventId).toBeTruthy();
+  expect(listItem.amount === notice.amount).toBeTruthy();
+  expect(listItem.noticeDate === notice.noticeDate).toBeTruthy();
   // assuming a single cart item, needs an update when we will manage multi carts item
   expect(listItem.payeeName === carts[0].payee.name).toBeTruthy();
   // payee Name
@@ -50,17 +50,17 @@ test('[E2E-ARC-9] Come Cittadino voglio accedere alla pagina di dettaglio di una
   // recepit code
   await expect(page.getByText(carts[0].refNumberValue)).toBeVisible();
   // fee
-  expect(typeof transaction.fee === 'number').toBeTruthy();
+  expect(typeof notice.fee === 'number').toBeTruthy();
   // partial
-  expect(typeof transaction.amount === 'number').toBeTruthy();
+  expect(typeof notice.amount === 'number').toBeTruthy();
   // date
-  expect(isValidDate(transaction.transactionDate)).toBeTruthy();
+  expect(isValidDate(notice.noticeDate)).toBeTruthy();
   // psp name
-  await expect(page.getByText(transaction.pspName, { exact: true })).toBeVisible();
+  await expect(page.getByText(notice.pspName, { exact: true })).toBeVisible();
   // rrn
-  await expect(page.getByText(transaction.rrn)).toBeVisible();
+  await expect(page.getByText(notice.rrn)).toBeVisible();
   // eventId
-  const eventIdSubstring = transaction.eventId.substring(0, 7);
+  const eventIdSubstring = notice.eventId.substring(0, 7);
   await expect(page.getByText(new RegExp(`${eventIdSubstring}`))).toBeVisible();
 });
 
