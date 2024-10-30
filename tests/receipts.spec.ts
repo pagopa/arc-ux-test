@@ -32,15 +32,15 @@ test('[E2E-ARC-9] Come Cittadino voglio accedere alla pagina di dettaglio di una
   await expect(page).toHaveURL(`/pagamenti/transactions/${eventId}`);
 
   // waiting for the API call
-  const { infoTransaction: transaction, carts } = await getFulfilledResponse(
+  const { infoNotice: notice, carts } = await getFulfilledResponse(
     page,
-    `arc/v1/transactions/${eventId}`
+    `arc/v1/notices/${eventId}`
   );
 
   // DATA CHECKS
-  expect(listItem.eventId === transaction.transactionId).toBeTruthy();
-  expect(listItem.amount === transaction.amount).toBeTruthy();
-  expect(listItem.noticeDate === transaction.transactionDate).toBeTruthy();
+  expect(listItem.eventId === notice.eventId).toBeTruthy();
+  expect(listItem.amount === notice.amount).toBeTruthy();
+  expect(listItem.noticeDate === notice.noticeDate).toBeTruthy();
   // assuming a single cart item, needs an update when we will manage multi carts item
   expect(listItem.payeeName === carts[0].payee.name).toBeTruthy();
   // payee Name
@@ -50,18 +50,18 @@ test('[E2E-ARC-9] Come Cittadino voglio accedere alla pagina di dettaglio di una
   // recepit code
   await expect(page.getByText(carts[0].refNumberValue)).toBeVisible();
   // fee
-  expect(typeof transaction.fee === 'number').toBeTruthy();
+  expect(typeof notice.fee === 'number').toBeTruthy();
   // partial
-  expect(typeof transaction.amount === 'number').toBeTruthy();
+  expect(typeof notice.amount === 'number').toBeTruthy();
   // date
-  expect(isValidDate(transaction.transactionDate)).toBeTruthy();
+  expect(isValidDate(notice.noticeDate)).toBeTruthy();
   // psp name
-  await expect(page.getByText(transaction.pspName, { exact: true })).toBeVisible();
+  await expect(page.getByText(notice.pspName, { exact: true })).toBeVisible();
   // rrn
-  await expect(page.getByText(transaction.rrn)).toBeVisible();
-  // transactionId
-  const transactionIdSubstring = transaction.transactionId.substring(0, 7);
-  await expect(page.getByText(new RegExp(`${transactionIdSubstring}`))).toBeVisible();
+  await expect(page.getByText(notice.rrn)).toBeVisible();
+  // eventId
+  const eventIdSubstring = notice.eventId.substring(0, 7);
+  await expect(page.getByText(new RegExp(`${eventIdSubstring}`))).toBeVisible();
 });
 
 test('[E2E-ARC-10] Come Cittadino voglio poter visualizzare il PDF di un avviso per poterlo stampare (eventualmente)', async ({
@@ -91,7 +91,7 @@ test('[E2E-ARC-10B] Come Cittadino voglio poter visualizzare il PDF di un avviso
 });
 
 test('[E2E-ARC-9B] Come Cittadino voglio accedere alla pagina di dettaglio di una ricevuta in modo da poter consultare tutte le informazioni disponibili, ma si verifica un errore.', async () => {
-  await page.route('*/**/arc/v1/transactions/*', (route) => {
+  await page.route('*/**/arc/v1/notices/*', (route) => {
     route.abort();
   });
   const errorMessage = 'Ops! Something went wrong, please try again';
