@@ -8,7 +8,7 @@ test('my data test', async ({ page }) => {
   await page.getByRole('button').getByText(`${userInfo.name} ${userInfo.cognome}`).click();
   await page.getByText('I tuoi dati').click();
   page.waitForURL('**/user');
-  await expect(page.locator('h1:has-text("Your data")')).toBeVisible();
+  await expect(page.locator('h1:has-text("I tuoi dati")')).toBeVisible();
   await expect(
     page.locator(`div:has-text("${userInfo.name}")`).filter({ hasNotText: 'Assistenza' }).first()
   ).toBeVisible();
