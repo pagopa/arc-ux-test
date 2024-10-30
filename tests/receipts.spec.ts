@@ -34,11 +34,11 @@ test('[E2E-ARC-9] Come Cittadino voglio accedere alla pagina di dettaglio di una
   // waiting for the API call
   const { infoTransaction: transaction, carts } = await getFulfilledResponse(
     page,
-    `arc/v1/transactions/${eventId}`
+    `arc/v1/notices/${eventId}`
   );
 
   // DATA CHECKS
-  expect(listItem.eventId === transaction.transactionId).toBeTruthy();
+  expect(listItem.eventId === transaction.eventId).toBeTruthy();
   expect(listItem.amount === transaction.amount).toBeTruthy();
   expect(listItem.noticeDate === transaction.transactionDate).toBeTruthy();
   // assuming a single cart item, needs an update when we will manage multi carts item
@@ -59,9 +59,9 @@ test('[E2E-ARC-9] Come Cittadino voglio accedere alla pagina di dettaglio di una
   await expect(page.getByText(transaction.pspName, { exact: true })).toBeVisible();
   // rrn
   await expect(page.getByText(transaction.rrn)).toBeVisible();
-  // transactionId
-  const transactionIdSubstring = transaction.transactionId.substring(0, 7);
-  await expect(page.getByText(new RegExp(`${transactionIdSubstring}`))).toBeVisible();
+  // eventId
+  const eventIdSubstring = transaction.eventId.substring(0, 7);
+  await expect(page.getByText(new RegExp(`${eventIdSubstring}`))).toBeVisible();
 });
 
 test('[E2E-ARC-10] Come Cittadino voglio poter visualizzare il PDF di un avviso per poterlo stampare (eventualmente)', async ({
@@ -91,7 +91,7 @@ test('[E2E-ARC-10B] Come Cittadino voglio poter visualizzare il PDF di un avviso
 });
 
 test('[E2E-ARC-9B] Come Cittadino voglio accedere alla pagina di dettaglio di una ricevuta in modo da poter consultare tutte le informazioni disponibili, ma si verifica un errore.', async () => {
-  await page.route('*/**/arc/v1/transactions/*', (route) => {
+  await page.route('*/**/arc/v1/notices/*', (route) => {
     route.abort();
   });
   const errorMessage = 'Ops! Something went wrong, please try again';
