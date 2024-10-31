@@ -8,17 +8,22 @@ let searchParam = '';
 const executeLoginSteps = async (page: Page) => {
   const username = process.env?.USERNAME;
   const password = process.env?.PASSWORD;
+  const identity_provider_button_test_id = process.env?.IDENTITY_PROVIDER_BUTTON_TEST_ID;
+
   expect(username).toBeTruthy();
   expect(password).toBeTruthy();
+  expect(identity_provider_button_test_id).toBeTruthy();
 
-  if (!(username && password)) {
-    throw new Error('Setup has failed, missing username and/or password!');
+  if (!(username && password && identity_provider_button_test_id)) {
+    throw new Error(
+      'Setup has failed, missing username or password or identity provider button id!'
+    );
   }
   await page.goto('/');
   await page.goto('/pagamenti/login');
   await page.getByLabel('Accedi').click();
   await page.getByRole('button', { name: 'Entra con SPID' }).click();
-  await page.getByTestId('idp-button-https://demo.spid.gov.it').click();
+  await page.getByTestId(identity_provider_button_test_id).click();
   await page.waitForURL('**/start');
   await expect(page.locator('#username')).toBeVisible({ timeout: 20000 });
   await page.locator('#username').click();
