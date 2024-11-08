@@ -60,12 +60,13 @@ setup(
           await page.waitForURL('**/courtesy*');
           // Redirect to the local auth-callback
           await page.goto(`/pagamenti/auth-callback${searchParam}`);
-        } 
-      }, { times: 1}
+        }
+      },
+      { times: 1 }
     );
 
     await executeLoginSteps(page);
-    
+
     await saveState(page);
   }
 );
