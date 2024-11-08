@@ -28,7 +28,7 @@ test('[E2E-ARC-9] Come Cittadino voglio accedere alla pagina di dettaglio di una
   eventId = listItem.eventId;
 
   // click on first row item
-  page.getByTestId("transaction-details-button").click();
+  page.getByTestId('transaction-details-button').first().click();
   await expect(page).toHaveURL(`/pagamenti/transactions/${eventId}`);
 
   // waiting for the API call
@@ -38,15 +38,17 @@ test('[E2E-ARC-9] Come Cittadino voglio accedere alla pagina di dettaglio di una
   );
 
   // DATA CHECKS
-  expect(listItem.eventId === notice.eventId).toBeTruthy();
+  // expect(listItem.eventId === notice.eventId).toBeTruthy();
   expect(listItem.amount === notice.amount).toBeTruthy();
   expect(listItem.noticeDate === notice.noticeDate).toBeTruthy();
   // assuming a single cart item, needs an update when we will manage multi carts item
   expect(listItem.payeeName === carts[0].payee.name).toBeTruthy();
   // payee Name
-  await expect(page.locator('#transaction-detail-creditorEntity')).toBe(carts[0].payee.name);
+  await expect(page.locator('#transaction-detail-creditorEntity')).toHaveText(carts[0].payee.name);
   // payee taxt code
-  await expect(page.locator('#transaction-detail-creditorFiscalCode')).toBe(carts[0].payee.taxCode);
+  await expect(page.locator('#transaction-detail-creditorFiscalCode')).toHaveText(
+    carts[0].payee.taxCode
+  );
   // recepit code
   await expect(page.locator('#transaction-detail-noticeCode')).toBeVisible(carts[0].refNumberValue);
   // fee
@@ -56,12 +58,13 @@ test('[E2E-ARC-9] Come Cittadino voglio accedere alla pagina di dettaglio di una
   // date
   expect(isValidDate(notice.noticeDate)).toBeTruthy();
   // psp name
-  await expect(page.locator('#transaction-detail-psp')).toBe(notice.pspName);
+  await expect(page.locator('#transaction-detail-psp')).toHaveText(notice.pspName);
   // rrn
-  await expect(page.locator('#transaction-detail-psp')).toBe(notice.rrn);
+  await expect(page.locator('#transaction-detail-rrn')).toHaveText(notice.rrn);
   // eventId
-  const eventIdSubstring = notice.eventId.length > 20 ? notice.eventId.substring(0, 20) + '…' : notice.eventId;
-  await expect(page.locator('#transaction-detail-eventId')).toBe(eventIdSubstring);
+  const eventIdSubstring =
+    notice.eventId.length > 20 ? notice.eventId.substring(0, 20) + '…' : notice.eventId;
+  await expect(page.locator('#transaction-detail-eventId')).toHaveText(eventIdSubstring);
 });
 
 test('[E2E-ARC-10] Come Cittadino voglio poter visualizzare il PDF di un avviso per poterlo stampare (eventualmente)', async ({

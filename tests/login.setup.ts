@@ -3,6 +3,7 @@ import { skipAuth, userPath } from '../utils';
 import path from 'path';
 
 const authFile = path.join(__dirname, `../${userPath}`);
+let searchParam = '';
 
 const executeLoginSteps = async (page: Page) => {
   const username = process.env?.USERNAME;
@@ -53,16 +54,18 @@ setup(
       async (route, request) => {
         if (process.env.BASE_URL?.includes('localhost')) {
           const { search } = new URL(request.url());
+          searchParam = search;
+          // Abort the current hit
           await route.abort();
-          await page.goto(`/pagamenti/auth-callback${search}`);
-          return;
-        }
-        route.continue();
-      },
-      { times: 1 }
+          await page.waitForURL('**/courtesy*');
+          // Redirect to the local auth-callback
+          await page.goto(`/pagamenti/auth-callback${searchParam}`);
+        } 
+      }, { times: 1}
     );
 
     await executeLoginSteps(page);
+    
     await saveState(page);
   }
 );

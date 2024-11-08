@@ -52,11 +52,21 @@ test(`[E2E-ARC-6] Come Cittadino voglio accedere al dettaglio di un avviso di pa
   const paymentNotice = await page.evaluate(() => sessionStorage.getItem('paymentNotice'));
   const paymentNoticeJson = JSON.parse(paymentNotice || '');
   // checks value on the page
-  await expect(page.getByTestId('app.paymentNoticeDetail.amount').locator('dd')).toBe(paymentNoticeJson.paymentOptions.installments.amount);
-  await expect(page.getByTestId('app.paymentNoticeDetail.paFullname').locator('dd')).toBe(paymentNoticeJson.paymentOptions.installments.paFullName);
-  await expect(page.getByTestId('app.paymentNoticeDetail.subject').locator('dd')).toBe(paymentNoticeJson.paymentOptions.installments.description);
-  await expect(page.getByTestId('app.paymentNoticeDetail.iuv').locator('dd')).toBe(paymentNoticeJson.paymentOptions.installments.iuv);
-  await expect(page.getByTestId('app.paymentNoticeDetail.paTaxCode').locator('dd')).toBe(paymentNoticeJson.paymentOptions.installments.paTaxCode);
+  await expect(page.getByTestId('app.paymentNoticeDetail.amount').locator('dd')).toHaveText(
+    paymentNoticeJson.paymentOptions.installments.amount
+  );
+  await expect(page.getByTestId('app.paymentNoticeDetail.paFullname').locator('dd')).toHaveText(
+    paymentNoticeJson.paymentOptions.installments.paFullName
+  );
+  await expect(page.getByTestId('app.paymentNoticeDetail.subject').locator('dd')).toHaveText(
+    paymentNoticeJson.paymentOptions.installments.description
+  );
+  await expect(page.getByTestId('app.paymentNoticeDetail.iuv').locator('dd')).toHaveText(
+    paymentNoticeJson.paymentOptions.installments.iuv
+  );
+  await expect(page.getByTestId('app.paymentNoticeDetail.paTaxCode').locator('dd')).toHaveText(
+    paymentNoticeJson.paymentOptions.installments.paTaxCode
+  );
 
   await expect(page.locator('#payment-notice-pay-button')).toBeEnabled();
 });
@@ -106,7 +116,6 @@ test(`[E2E-ARC-5B] Come Cittadino voglio accedere alla lista degli avvisi da pag
 });
 
 test(`E2E-ARC-5C] Come Cittadino voglio accedere alla lista degli avvisi da pagare in modo da poter avere una visione sintetica e d’insieme, non ottengo alcun errore, ma non ho avvisi associati.`, async () => {
-  const emptyMessage = 'Non abbiamo trovato avvisi da pagare';
   // reset mock
   await page.unroute('**/arc/v1/payment-notices');
   // override response setting an empty array
