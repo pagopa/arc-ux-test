@@ -21,11 +21,12 @@ In order to build and run this project are required:
 
 The table below describes all the Environment variables needed by the application.
 
-| Variable name | Description              | type                  |
-| ------------- | ------------------------ | --------------------- |
-| BASE_URL      | the target site          | url                   |
-| USERNAME      | Username to access with  | string                |
-| PASSWORD      | Password for the user    | string                |
+| Variable name                    | Description                | type                  |
+| -------------------------------- | -------------------------- | --------------------- |
+| BASE_URL                         | the target site            | url                   |
+| USERNAME                         | Username to access with    | string                |
+| PASSWORD                         | Password for the user      | string                |
+| IDENTITY_PROVIDER_BUTTON_TEST_ID | button id of auth provider | string                |
 
 ### Installation
 
