@@ -12,6 +12,20 @@ test.afterAll(async () => {
   await page.close();
 });
 
+test("[E2E-ARC-4] Come Cittadino autenticato voglio cliccare sul pulsante 'Paga un avviso' in modo da pagare l'avviso con checkout", async ({
+  page
+}) => {
+  await page.goto('/pagamenti/');
+  await expect(page).toHaveURL('/pagamenti/');
+  await page.getByRole('link', { name: 'Paga un avviso' }).click();
+  const newTabPromise = page.waitForEvent('popup');
+
+  const newTab = await newTabPromise;
+  await newTab.waitForLoadState();
+
+  await expect(newTab).toHaveURL(new RegExp('checkout.pagopa.it/'));
+});
+
 test(`[E2E-ARC-5] Come Cittadino voglio accedere alla lista degli avvisi da pagare`, async () => {
   await page.goto('/pagamenti/payment-notices/');
   await expect(page).toHaveURL('/pagamenti/payment-notices/');
@@ -111,7 +125,7 @@ test(`[E2E-ARC-5B] Come Cittadino voglio accedere alla lista degli avvisi da pag
   expect(optionsListItemsCount).toBeGreaterThan(0);
 });
 
-test(`E2E-ARC-5C] Come Cittadino voglio accedere alla lista degli avvisi da pagare in modo da poter avere una visione sintetica e d’insieme, non ottengo alcun errore, ma non ho avvisi associati.`, async () => {
+test(`[E2E-ARC-5C] Come Cittadino voglio accedere alla lista degli avvisi da pagare in modo da poter avere una visione sintetica e d’insieme, non ottengo alcun errore, ma non ho avvisi associati.`, async () => {
   // reset mock
   await page.unroute('**/arc/v1/payment-notices');
   // override response setting an empty array

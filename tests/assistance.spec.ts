@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test';
 
-test('submit assistance form', async ({ page }) => {
+test('[E2E-ARC-11] Come Cittadino autenticato voglio accedere alla sezione di Assistenza in modo da aprire una segnalazione', async ({
+  page
+}) => {
   const newTicketURL = 'https://arc.assistenza.pagopa.it/hc/it/requests/new';
   await page.goto('/pagamenti/');
   await expect(page).toHaveURL('/pagamenti/');

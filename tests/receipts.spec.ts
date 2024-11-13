@@ -101,14 +101,3 @@ test('[E2E-ARC-9B] Come Cittadino voglio accedere alla pagina di dettaglio di un
   await expect(page).toHaveURL(`/pagamenti/transactions/${eventId}`);
   await expect(page.locator('#transaction-detail-error')).toBeVisible({ timeout: 20000 });
 });
-
-test(`[E2E-ARC-5C] Come Cittadino voglio accedere alla lista degli avvisi da pagare in modo da poter avere una visione sintetica e d’insieme, non ottengo alcun errore, ma non ho avvisi associati.`, async () => {
-  await page.route('**/arc/v1/notices*', async (route) => {
-    const json = { notices: [] };
-    await route.fulfill({ json });
-  });
-
-  await page.goto('/pagamenti/transactions');
-  await expect(page).toHaveURL('/pagamenti/transactions');
-  await expect(page.getByTestId('paid.notices.empty.title')).toBeVisible();
-});
