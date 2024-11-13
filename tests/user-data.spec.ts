@@ -1,5 +1,4 @@
 import { test, expect } from '@playwright/test';
-import userInfo from './userInfo.json';
 import { getFulfilledResponse } from '../utils';
 
 test("[E2E-ARC-2] Come Cittadino autenticato voglio accedere alla sezione 'I miei dati' per poter consultare le informazioni del mio account SPID", async ({
@@ -20,6 +19,7 @@ test("[E2E-ARC-2] Come Cittadino autenticato voglio accedere alla sezione 'I mie
   await page.getByText('I tuoi dati').click();
 
   page.waitForURL('**/user');
+
   await expect(page.getByTestId('app.user.title')).toBeVisible();
   await expect(page.getByTestId('app.user.info.name.value')).toContainText(user.name);
   await expect(page.getByTestId('app.user.info.surname.value')).toContainText(user.familyName);
