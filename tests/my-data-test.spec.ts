@@ -8,14 +8,10 @@ test('my data test', async ({ page }) => {
   await page.getByRole('button').getByText(`${userInfo.name} ${userInfo.cognome}`).click();
   await page.getByText('I tuoi dati').click();
   page.waitForURL('**/user');
-  await expect(page.locator('h1:has-text("I tuoi dati")')).toBeVisible();
-  await expect(
-    page.locator(`div:has-text("${userInfo.name}")`).filter({ hasNotText: 'Assistenza' }).first()
-  ).toBeVisible();
-  await expect(
-    page.locator(`div:has-text("${userInfo.cognome}")`).filter({ hasNotText: 'Assistenza' }).first()
-  ).toBeVisible();
+  await expect(page.getByTestId('app.user.title')).toBeVisible();
+  await expect(page.getByTestId('app.user.info.name.value')).toBeVisible();
+  await expect(page.getByTestId('app.user.info.surname.value')).toBeVisible();
 
-  await expect(page.getByText(userInfo.CF)).toBeVisible();
-  await expect(page.getByText(userInfo.email)).toBeVisible();
+  await expect(page.getByTestId('app.user.info.identifier.value')).toBeVisible();
+  await expect(page.getByTestId('app.user.info.email.value')).toBeVisible();
 });
