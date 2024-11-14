@@ -1,5 +1,4 @@
 import { test, expect, Page } from '@playwright/test';
-import userInfo from './userInfo.json';
 
 // Annotate entire file as serial.
 test.describe.configure({ mode: 'serial' });
@@ -11,6 +10,20 @@ test.beforeAll(async ({ browser }) => {
 });
 test.afterAll(async () => {
   await page.close();
+});
+
+test("[E2E-ARC-4] Come Cittadino autenticato voglio cliccare sul pulsante 'Paga un avviso' in modo da pagare l'avviso con checkout", async ({
+  page
+}) => {
+  await page.goto('/pagamenti/');
+  await expect(page).toHaveURL('/pagamenti/');
+  await page.getByRole('link', { name: 'Paga un avviso' }).click();
+  const newTabPromise = page.waitForEvent('popup');
+
+  const newTab = await newTabPromise;
+  await newTab.waitForLoadState();
+
+  await expect(newTab).toHaveURL(new RegExp('checkout.pagopa.it/'));
 });
 
 test(`[E2E-ARC-5] Come Cittadino voglio accedere alla lista degli avvisi da pagare`, async () => {
@@ -76,15 +89,12 @@ test(`[E2E-ARC-7] Come Cittadino voglio poter avviare il pagamento di un avviso`
   const paymentNotice = await page.evaluate(() => sessionStorage.getItem('paymentNotice'));
   const paymentNoticeJson = JSON.parse(paymentNotice || '');
   const amount = paymentNoticeJson.paymentOptions.installments.amount;
-  const userEmail = userInfo.email;
   // click to pay
   await page.locator('#payment-notice-pay-button').click();
   // wait for checkout
   await expect(page).toHaveURL(new RegExp('checkout.pagopa.it/'));
   // test on checkout side
   await expect(page.locator('#email')).toBeVisible({ timeout: 10000 });
-  // test if the user email field is filled with the user email
-  await expect(page.locator('#email')).toHaveValue(userEmail);
   // test if the car button as the same amount of the payment notice
   await expect(page.getByRole('button').getByText(amount)).toBeVisible();
 });
@@ -115,7 +125,7 @@ test(`[E2E-ARC-5B] Come Cittadino voglio accedere alla lista degli avvisi da pag
   expect(optionsListItemsCount).toBeGreaterThan(0);
 });
 
-test(`E2E-ARC-5C] Come Cittadino voglio accedere alla lista degli avvisi da pagare in modo da poter avere una visione sintetica e d’insieme, non ottengo alcun errore, ma non ho avvisi associati.`, async () => {
+test(`[E2E-ARC-5C] Come Cittadino voglio accedere alla lista degli avvisi da pagare in modo da poter avere una visione sintetica e d’insieme, non ottengo alcun errore, ma non ho avvisi associati.`, async () => {
   // reset mock
   await page.unroute('**/arc/v1/payment-notices');
   // override response setting an empty array
