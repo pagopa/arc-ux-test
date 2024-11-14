@@ -110,17 +110,20 @@ test(`[E2E-ARC-5B] Come Cittadino voglio accedere alla lista degli avvisi da pag
   const OPTIN = await page.evaluate(() => sessionStorage.getItem('OPTIN'));
   expect(OPTIN).toBeTruthy();
 
-  // waiting for retries ending
-  await page.waitForTimeout(1000 * 10);
-  expect(page.getByTestId('app.transactions.error')).toBeVisible();
+  // timeout extending, waiting for retries ending on routes abort
+  await expect(page.getByTestId('app.paymentNotice.error.description')).toBeVisible({
+    timeout: 1000 * 10
+  });
 
   // clearing abort
   await page.unroute('**/arc/v1/payment-notices');
   await page.getByTestId('app.paymentNotice.error.button').click();
-  await page.waitForTimeout(1000 * 10);
 
   // wait for the list of payment notices assuming that by now the API works
-  await expect(page.locator('#payment-notices-list')).toBeVisible();
+  // timeout extended to wait for the fake loading
+  await expect(page.locator('#payment-notices-list')).toBeVisible({
+    timeout: 1000 * 10
+  });
   const optionsListItemsCount = await page.getByTestId('payment-notices-item').count();
   expect(optionsListItemsCount).toBeGreaterThan(0);
 });
