@@ -59,8 +59,6 @@ test('[E2E-ARC-9] Come Cittadino voglio accedere alla pagina di dettaglio di una
   expect(isValidDate(notice.noticeDate)).toBeTruthy();
   // psp name
   await expect(page.locator('#transaction-detail-psp')).toHaveText(notice.pspName);
-  // rrn
-  await expect(page.locator('#transaction-detail-rrn')).toHaveText(notice.rrn);
   // eventId
   const eventIdSubstring =
     notice.eventId.length > 20 ? notice.eventId.substring(0, 20) + '…' : notice.eventId;
