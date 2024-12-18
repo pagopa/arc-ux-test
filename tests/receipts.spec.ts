@@ -75,7 +75,7 @@ test('[E2E-ARC-10] Come Cittadino voglio poter visualizzare il PDF di un avviso 
   await page.getByTestId('receipt-download-btn').click();
   const newPage = await pagePromise;
   await expect(newPage).toHaveURL(
-    /blob:http(s)?:\/\/(dev.|uat.)?cittadini.pagopa.it\/([a-z]|[0-9]|-)*/
+    /blob:http(s)?:\/\/((dev.|uat.)?cittadini.pagopa.it|localhost:1234)\/([a-z]|[0-9]|-)*/
   );
 });
 
