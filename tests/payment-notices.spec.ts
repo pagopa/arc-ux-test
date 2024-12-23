@@ -1,8 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
 
-// Annotate entire file as serial.
-test.describe.configure({ mode: 'serial' });
-
 let page: Page;
 
 test.beforeAll(async ({ browser }) => {
@@ -26,77 +23,103 @@ test("[E2E-ARC-4] Come Cittadino autenticato voglio cliccare sul pulsante 'Paga 
   await expect(newTab).toHaveURL(new RegExp('checkout.pagopa.it/'));
 });
 
-test(`[E2E-ARC-5] Come Cittadino voglio accedere alla lista degli avvisi da pagare`, async () => {
-  await page.goto('/pagamenti/payment-notices/');
-  await expect(page).toHaveURL('/pagamenti/payment-notices/');
-  await expect(page.locator('#searchButtonPaymentNotices')).toBeVisible();
-  await page.locator('#searchButtonPaymentNotices').click();
+test(`Avvisi e pagamento`, async () => {
+  const selectedItem =
+    await test.step(`[E2E-ARC-5] Come Cittadino voglio accedere alla lista degli avvisi da pagare`, async () => {
+      await page.goto('/pagamenti/payment-notices/');
+      await expect(page).toHaveURL('/pagamenti/payment-notices/');
+      await expect(page.locator('#searchButtonPaymentNotices')).toBeVisible();
+      await page.locator('#searchButtonPaymentNotices').click();
 
-  const responsePromise = page.waitForResponse('**/arc/v1/payment-notices');
+      const responsePromise = page.waitForResponse('**/arc/v1/payment-notices');
 
-  // wait for modal and click on the cta button
-  await expect(page.locator('#pull-payments-modal .MuiPaper-root')).toBeVisible();
-  await page.locator('#pull-payments-modal-ok').click();
-  const response = await responsePromise.then((response) => response.json());
+      // wait for modal and click on the cta button
+      await expect(page.locator('#pull-payments-modal .MuiPaper-root')).toBeVisible();
+      await page.locator('#pull-payments-modal-ok').click();
+      const response = await responsePromise.then((response) => response.json());
 
-  // test if session storage var is filled
-  const OPTIN = await page.evaluate(() => sessionStorage.getItem('OPTIN'));
-  expect(OPTIN).toBeTruthy();
-  // wait for the list of payment notices
-  await expect(page.locator('#payment-notices-list')).toBeVisible({ timeout: 10000 });
-  const optionsListItemsCount = await page.getByTestId('payment-notices-item').count();
-  expect(optionsListItemsCount).toBeGreaterThan(0);
+      // test if session storage var is filled
+      const OPTIN = await page.evaluate(() => sessionStorage.getItem('OPTIN'));
+      expect(OPTIN).toBeTruthy();
+      // wait for the list of payment notices
+      await expect(page.locator('#payment-notices-list')).toBeVisible({ timeout: 10000 });
+      const optionsListItemsCount = await page.getByTestId('payment-notices-item').count();
+      expect(optionsListItemsCount).toBeGreaterThan(0);
 
-  // saving info of the first item
-  const responseFirstItem = response['paymentNotices'][0];
-  // select the first item of the list showed
-  const listFirstItem = page.getByTestId('payment-notices-item').first();
+      const selectedItem = response['paymentNotices'][0];
+      // select the first item of the list showed
+      const listFirstItem = page.getByTestId('payment-notices-item').first();
 
-  // DATA CHECKS
-  await expect(listFirstItem.locator('h1')).toBeVisible();
-  await expect(listFirstItem.locator('h2')).toBeVisible();
-  await expect(listFirstItem.getByTestId('payment-notices-item-cta')).toBeVisible();
-  await listFirstItem.getByTestId('payment-notices-item-cta').click();
-  await expect(page).toHaveURL(`/pagamenti/payment-notices/${responseFirstItem.iupd}`);
-});
+      // DATA CHECKS
+      await expect(listFirstItem.locator('h1')).toBeVisible();
+      await expect(listFirstItem.locator('h2')).toBeVisible();
+      await expect(listFirstItem.getByTestId('payment-notices-item-cta')).toBeVisible();
+      await listFirstItem.getByTestId('payment-notices-item-cta').click();
+      await expect(page).toHaveURL(
+        `/pagamenti/payment-notices/${selectedItem.iupd}/${selectedItem.paTaxCode}`
+      );
+      return selectedItem;
+    });
 
-test(`[E2E-ARC-6] Come Cittadino voglio accedere al dettaglio di un avviso di pagamento`, async () => {
-  // get data from sessionStorage
-  const paymentNotice = await page.evaluate(() => sessionStorage.getItem('paymentNotice'));
-  const paymentNoticeJson = JSON.parse(paymentNotice || '');
-  // checks value on the page
-  await expect(page.getByTestId('app.paymentNoticeDetail.amount').locator('dd')).toHaveText(
-    paymentNoticeJson.paymentOptions.installments.amount
-  );
-  await expect(page.getByTestId('app.paymentNoticeDetail.paFullname').locator('dd')).toHaveText(
-    paymentNoticeJson.paymentOptions.installments.paFullName
-  );
-  await expect(page.getByTestId('app.paymentNoticeDetail.subject').locator('dd')).toHaveText(
-    paymentNoticeJson.paymentOptions.installments.description
-  );
-  await expect(page.getByTestId('app.paymentNoticeDetail.iuv').locator('dd')).toHaveText(
-    paymentNoticeJson.paymentOptions.installments.iuv
-  );
-  await expect(page.getByTestId('app.paymentNoticeDetail.paTaxCode').locator('dd')).toHaveText(
-    paymentNoticeJson.paymentOptions.installments.paTaxCode
-  );
+  const selectedItemDetail =
+    await test.step(`[E2E-ARC-6] Come Cittadino voglio accedere al dettaglio di un avviso di pagamento`, async () => {
+      const response = await page.waitForResponse((response) =>
+        response.url().includes(selectedItem.iupd)
+      );
+      const selectedItemDetail = await response.json();
 
-  await expect(page.locator('#payment-notice-pay-button')).toBeEnabled();
-});
+      const amount = selectedItemDetail.paymentOptions[0].amount;
+      const amountInEur = new Intl.NumberFormat('it-IT', {
+        style: 'currency',
+        currency: 'EUR',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }).format(amount / Math.pow(10, 2));
 
-test(`[E2E-ARC-7] Come Cittadino voglio poter avviare il pagamento di un avviso`, async () => {
-  // get data from sessionStorage
-  const paymentNotice = await page.evaluate(() => sessionStorage.getItem('paymentNotice'));
-  const paymentNoticeJson = JSON.parse(paymentNotice || '');
-  const amount = paymentNoticeJson.paymentOptions.installments.amount;
-  // click to pay
-  await page.locator('#payment-notice-pay-button').click();
-  // wait for checkout
-  await expect(page).toHaveURL(new RegExp('checkout.pagopa.it/'));
-  // test on checkout side
-  await expect(page.locator('#email')).toBeVisible({ timeout: 10000 });
-  // test if the car button as the same amount of the payment notice
-  await expect(page.getByRole('button').getByText(amount)).toBeVisible();
+      expect(selectedItemDetail.paymentOptions[0].iuv).toBe(
+        selectedItem.paymentOptions[0].installments[0].iuv
+      );
+
+      await expect(page.getByTestId('app.paymentNoticeDetail.amount').locator('dd')).toHaveText(
+        amountInEur
+      );
+      await expect(page.getByTestId('app.paymentNoticeDetail.paFullname').locator('dd')).toHaveText(
+        selectedItemDetail.paFullName
+      );
+      await expect(page.getByTestId('app.paymentNoticeDetail.paTaxCode').locator('dd')).toHaveText(
+        selectedItemDetail.paTaxCode
+      );
+      await expect(page.getByTestId('app.paymentNoticeDetail.subject').locator('dd')).toHaveText(
+        selectedItemDetail.paymentOptions[0].description
+      );
+      await expect(page.getByTestId('app.paymentNoticeDetail.iuv').locator('dd')).toHaveText(
+        selectedItemDetail.paymentOptions[0].iuv
+      );
+
+      await expect(page.locator('#payment-notice-pay-button')).toBeEnabled();
+
+      return selectedItemDetail;
+    });
+
+  await test.step(`[E2E-ARC-7] Come Cittadino voglio poter avviare il pagamento di un avviso`, async () => {
+    const amount = selectedItemDetail.paymentOptions[0].amount;
+
+    const amountInEur = new Intl.NumberFormat('it-IT', {
+      style: 'currency',
+      currency: 'EUR',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(amount / Math.pow(10, 2));
+
+    // click to pay
+    await page.locator('#payment-notice-pay-button').click();
+    // wait for checkout
+    await expect(page).toHaveURL(new RegExp('checkout.pagopa.it/'));
+    // test on checkout side
+    await expect(page.locator('#email')).toBeVisible({ timeout: 10000 });
+    // test if the car button as the same amount of the payment notice
+    await expect(page.getByRole('button').getByText(amountInEur)).toBeVisible();
+  });
 });
 
 test(`[E2E-ARC-5B] Come Cittadino voglio accedere alla lista degli avvisi da pagare, ma si verifca un errore`, async () => {
