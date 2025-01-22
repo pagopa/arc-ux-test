@@ -18,7 +18,7 @@ test("[E2E-ARC-2] Come Cittadino autenticato voglio accedere alla sezione 'I mie
   await page.getByRole('button').getByText(`${user.name} ${user.familyName}`).click();
   await page.getByText('I tuoi dati').click();
 
-  page.waitForURL('**/user');
+  page.waitForURL('**/profilo');
 
   await expect(page.getByTestId('app.user.title')).toBeVisible();
   await expect(page.getByTestId('app.user.info.name.value')).toContainText(user.name);
