@@ -18,7 +18,7 @@ test("[E2E-ARC-2] Come Cittadino autenticato voglio accedere alla sezione 'I mie
   await page.getByRole('button').getByText(`${user.name} ${user.familyName}`).click();
   await page.getByText('I tuoi dati').click();
 
-  page.waitForURL('**/user');
+  page.waitForURL('**/profilo');
 
   await expect(page.getByTestId('app.user.title')).toBeVisible();
   await expect(page.getByTestId('app.user.info.name.value')).toContainText(user.name);
@@ -40,7 +40,7 @@ test("[E2E-ARC-3] Come Cittadino voglio 'sloggarmi' dall'applicativo", async ({ 
   await expect(page.getByLabel('party-menu-button')).toBeVisible();
   await page.getByLabel('party-menu-button').click();
   await page.getByRole('menuitem').getByText('Esci').click();
-  await page.waitForURL('**/login');
+  await page.waitForURL('**/accesso');
 
   const accessToken = await page.evaluate(() => localStorage.getItem('accessToken'));
   expect(accessToken).toBeNull();

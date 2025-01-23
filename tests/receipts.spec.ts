@@ -29,7 +29,7 @@ test('[E2E-ARC-9] Come Cittadino voglio accedere alla pagina di dettaglio di una
 
   // click on first row item
   page.getByTestId('transaction-details-button').first().click();
-  await expect(page).toHaveURL(`/pagamenti/transactions/${eventId}`);
+  await expect(page).toHaveURL(`/pagamenti/ricevute/${eventId}`);
 
   // waiting for the API call
   const { infoNotice: notice, carts } = await getFulfilledResponse(
@@ -96,6 +96,6 @@ test('[E2E-ARC-9B] Come Cittadino voglio accedere alla pagina di dettaglio di un
     route.abort();
   });
   await page.reload();
-  await expect(page).toHaveURL(`/pagamenti/transactions/${eventId}`);
+  await expect(page).toHaveURL(`/pagamenti/ricevute/${eventId}`);
   await expect(page.locator('#transaction-detail-error')).toBeVisible({ timeout: 20000 });
 });

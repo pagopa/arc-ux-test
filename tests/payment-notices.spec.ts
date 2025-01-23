@@ -28,8 +28,8 @@ test("[E2E-ARC-4] Come Cittadino autenticato voglio cliccare sul pulsante 'Paga 
 test(`Avvisi e pagamento`, async () => {
   const selectedItem =
     await test.step(`[E2E-ARC-5] Come Cittadino voglio accedere alla lista degli avvisi da pagare`, async () => {
-      await page.goto('/pagamenti/payment-notices/');
-      await expect(page).toHaveURL('/pagamenti/payment-notices/');
+      await page.goto('/pagamenti/avvisi/');
+      await expect(page).toHaveURL('/pagamenti/avvisi/');
       await expect(page.locator('#searchButtonPaymentNotices')).toBeVisible();
       await page.locator('#searchButtonPaymentNotices').click();
 
@@ -58,7 +58,7 @@ test(`Avvisi e pagamento`, async () => {
       await expect(listFirstItem.getByTestId('payment-notices-item-cta')).toBeVisible();
       await listFirstItem.getByTestId('payment-notices-item-cta').click();
       await expect(page).toHaveURL(
-        `/pagamenti/payment-notices/${selectedItem.iupd}/${selectedItem.paTaxCode}`
+        `/pagamenti/avvisi/${selectedItem.iupd}/${selectedItem.paTaxCode}`
       );
       return selectedItem;
     });
@@ -128,8 +128,8 @@ test(`[E2E-ARC-5B] Come Cittadino voglio accedere alla lista degli avvisi da pag
   // causing a error when requesting payment notices items
   await page.route('**/arc/v1/payment-notices', (route) => route.abort());
 
-  await page.goto('/pagamenti/payment-notices/');
-  await expect(page).toHaveURL('/pagamenti/payment-notices/');
+  await page.goto('/pagamenti/avvisi/');
+  await expect(page).toHaveURL('/pagamenti/avvisi/');
 
   // test if session storage var is filled
   const OPTIN = await page.evaluate(() => sessionStorage.getItem('OPTIN'));
@@ -164,6 +164,6 @@ test(`[E2E-ARC-5C] Come Cittadino voglio accedere alla lista degli avvisi da pag
   // reload
   page.reload();
   // test
-  await expect(page).toHaveURL('/pagamenti/payment-notices/');
+  await expect(page).toHaveURL('/pagamenti/avvisi/');
   await expect(page.getByTestId('app.paymentNotice.empty')).toBeVisible({ timeout: 10000 });
 });
