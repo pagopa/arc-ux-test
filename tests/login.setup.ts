@@ -62,7 +62,7 @@ setup(
           searchParam = search;
           // Abort the current hit
           await route.abort();
-          await page.waitForURL('**/errore/accesso-non-riuscito');
+          await page.waitForURL('**/errore/**');
           // Redirect to the local auth-callback
           await page.goto(`/pagamenti/auth-callback${searchParam}`);
         }
