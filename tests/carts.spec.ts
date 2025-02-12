@@ -15,8 +15,8 @@ test(`[E2E-ARC-12] Come Cittadino autenticato voglio poter inserire più avvisi 
     window.sessionStorage.setItem('OPTIN', 'true');
   });
 
-  await page.goto(`/pagamenti/payment-notices/`);
-  await expect(page).toHaveURL(`/pagamenti/payment-notices/`);
+  await page.goto(`/pagamenti/avvisi/`);
+  await expect(page).toHaveURL(`/pagamenti/avvisi/`);
 
   const responsePromise = page.waitForResponse('**/arc/v1/payment-notices');
   const response = await responsePromise.then((response) => response.json());
@@ -31,12 +31,12 @@ test(`[E2E-ARC-12] Come Cittadino autenticato voglio poter inserire più avvisi 
   const listFirstItem = page.getByTestId('payment-notices-item').first();
   await listFirstItem.getByTestId('payment-notices-item-cta').click();
 
-  await expect(page).toHaveURL(`/pagamenti/payment-notices/${selectedItem.iupd}`);
+  await expect(page).toHaveURL(`/pagamenti/avvisi/${selectedItem.iupd}/${selectedItem.paTaxCode}`);
 
   // toggle add/remove button
   const cartButton = page.locator('#payment-notice-pay-button');
   // cart amount element
-  const cartAmount = page.locator('#cart-amount');
+  const cartAmount = page.locator('#header-cart-amount');
 
   await expect(cartAmount).toHaveText('0,00 €');
 
@@ -58,8 +58,8 @@ test(`[E2E-ARC-12] Come Cittadino autenticato voglio poter inserire più avvisi 
   await page.getByTestId('CloseIcon').click();
 
   // second step
-  await page.goto(`/pagamenti/payment-notices/`);
-  await expect(page).toHaveURL(`/pagamenti/payment-notices/`);
+  await page.goto(`/pagamenti/avvisi/`);
+  await expect(page).toHaveURL(`/pagamenti/avvisi/`);
 
   // wait for the list of payment notices
   await expect(page.locator('#payment-notices-list')).toBeVisible({ timeout: 10000 });
@@ -71,7 +71,7 @@ test(`[E2E-ARC-12] Come Cittadino autenticato voglio poter inserire più avvisi 
   const listSecondItem = page.getByTestId('payment-notices-item').nth(1);
   await listSecondItem.getByTestId('payment-notices-item-cta').click();
 
-  await expect(page).toHaveURL(`/pagamenti/payment-notices/${selectedSecondItem.iupd}`);
+  await expect(page).toHaveURL(`/pagamenti/avvisi/${selectedSecondItem.iupd}/${selectedSecondItem.paTaxCode}`);
 
   //add second element to cart
   await cartButton.click();
@@ -101,7 +101,7 @@ test(`[E2E-ARC-12B] Come Cittadino autenticato voglio poter inserire più avvisi
   );
 
   // cart amount element
-  const cartAmount = page.locator('#cart-amount');
+  const cartAmount = page.locator('#drawer-cart-amount');
   await expect(cartAmount).toHaveText('8,62 €');
 
   // open the drawer
@@ -109,7 +109,7 @@ test(`[E2E-ARC-12B] Come Cittadino autenticato voglio poter inserire più avvisi
   // pay button click
   await page.locator('#pay-button').click();
 
-  await expect(page).toHaveURL('/pagamenti/courtesy?errorcode=422');
+  await expect(page).toHaveURL('/pagamenti/errore/avvio-pagamento');
 
   await page.goBack();
 
@@ -126,82 +126,5 @@ test(`[E2E-ARC-12B] Come Cittadino autenticato voglio poter inserire più avvisi
 
   await page.locator('#pay-button').click();
 
-  await expect(page).toHaveURL('/pagamenti/courtesy?errorcode=422');
-
-  // await page.evaluate(() => {
-  //   window.sessionStorage.setItem('OPTIN', 'true');
-  // });
-
-  // await page.goto(`/pagamenti/payment-notices/`);
-  // await expect(page).toHaveURL(`/pagamenti/payment-notices/`);
-
-  // const responsePromise = page.waitForResponse('**/arc/v1/payment-notices');
-  // const response = await responsePromise.then((response) => response.json());
-
-  // // wait for the list of payment notices
-  // await expect(page.locator('#payment-notices-list')).toBeVisible({ timeout: 10000 });
-  // const optionsListItemsCount = await page.getByTestId('payment-notices-item').count();
-  // expect(optionsListItemsCount).toBeGreaterThan(0);
-
-  // // select the first item of the list showed
-  // const selectedItem = response['paymentNotices'][0];
-  // const listFirstItem = page.getByTestId('payment-notices-item').first();
-  // await listFirstItem.getByTestId('payment-notices-item-cta').click();
-
-  // await expect(page).toHaveURL(`/pagamenti/payment-notices/${selectedItem.iupd}`);
-
-  // // toggle add/remove button
-  // const cartButton = page.locator('#payment-notice-pay-button');
-  // // cart amount element
-  // const cartAmount = page.locator('#cart-amount');
-
-  // await expect(cartAmount).toHaveText('0,00 €');
-
-  // // add element to cart
-  // await cartButton.click();
-
-  // await expect(cartAmount).not.toHaveText('0,00 €');
-
-  // // close the drawer
-  // await page.getByTestId('CloseIcon').click();
-
-  // // remove the item
-  // await cartButton.click();
-  // await expect(cartAmount).toHaveText('0,00 €');
-
-  // // add the item again to continue with the test
-  // await cartButton.click();
-  // // close the drawer again
-  // await page.getByTestId('CloseIcon').click();
-
-  // // second step
-  // await page.goto(`/pagamenti/payment-notices/`);
-  // await expect(page).toHaveURL(`/pagamenti/payment-notices/`);
-
-  // // wait for the list of payment notices
-  // await expect(page.locator('#payment-notices-list')).toBeVisible({ timeout: 10000 });
-  // //const optionsListItemsCount = await page.getByTestId('payment-notices-item').count();
-  // //expect(optionsListItemsCount).toBeGreaterThan(0);
-
-  // // select the second item of the list showed
-  // const selectedSecondItem = response['paymentNotices'][1];
-  // const listSecondItem = page.getByTestId('payment-notices-item').nth(1);
-  // await listSecondItem.getByTestId('payment-notices-item-cta').click();
-
-  // await expect(page).toHaveURL(`/pagamenti/payment-notices/${selectedSecondItem.iupd}`);
-
-  // //add second element to cart
-  // await cartButton.click();
-
-  // await expect(cartAmount).toHaveText('8,62 €');
-
-  // // payment
-  // await page.locator('#pay-button').click();
-
-  // // wait for checkout
-  // await expect(page).toHaveURL(new RegExp('checkout.pagopa.it/'));
-  // // test on checkout side
-  // //await expect(page.locator('#email')).toBeVisible({ timeout: 10000 });
-  // // test if the car button as the same amount of the payment notice
-  // await expect(page.getByRole('button').getByText('8,62 €')).toBeVisible({ timeout: 10000 });
+  await expect(page).toHaveURL('/pagamenti/errore/avviso-non-pagabile');
 });
